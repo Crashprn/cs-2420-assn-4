@@ -29,7 +29,7 @@ public class HashTable<E>
      * Construct the hash table.
      * @param size the approximate initial size.
      */
-    public HashTable( int size )
+    public HashTable(int size )
     {
         allocateArray( size );
         doClear( );
@@ -58,6 +58,11 @@ public class HashTable<E>
         return true;
     }
 
+    /**
+     *
+     * @param limit Number of active entries to print
+     * @return
+     */
     public String toString (int limit){
         StringBuilder sb = new StringBuilder();
         int ct=0;
@@ -140,7 +145,7 @@ public class HashTable<E>
 
     /**
      * Get length of internal table.
-     * @return the size.
+     * @return the maximum size of HashTable.
      */
     public int capacity( )
     {
@@ -192,6 +197,9 @@ public class HashTable<E>
         doClear( );
     }
 
+    /**
+     * remove all entries in Hash Table
+     */
     private void doClear( )
     {
         occupiedCt = 0;
@@ -199,6 +207,12 @@ public class HashTable<E>
             array[ i ] = null;
     }
 
+    /**
+     *
+      * @param x the Item to be hashed
+     * @return the hashCode for the element
+     * 
+     */
     private int myhash( E x )
     {
         int hashVal = x.hashCode( );
@@ -302,9 +316,8 @@ public class HashTable<E>
         for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
             if( H.insert( ""+i ) )
                 System.out.println( "ERROR Find fails " + i );
-        System.out.println(H.find(""+ 5));
-        H.remove("" +5);
-        System.out.println(H.find(""+ 5));
+        for( int i = 1; i < NUMS; i+= 2 )
+            H.remove( ""+i );
         for( int i = 1; i < NUMS; i+=2 )
         {
             if( H.contains( ""+i ) )
