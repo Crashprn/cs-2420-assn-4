@@ -8,13 +8,18 @@ public class WritePoetry {
 
     WritePoetry(){}
 
-    public String WritePoem(String textFile, String seedWord, int lines, Boolean bool) throws FileNotFoundException {
+    public String WritePoem(String textFile, String seedWord1, String seedWord2, int lines, Boolean bool) throws FileNotFoundException {
         hashTable = new HashTable<>();
         makeHashTable(textFile);
         ArrayList<String> poem = new ArrayList<>();
-        poem.add(seedWord);
-        for (int i=0 ; i <  lines; i ++){
-            poem.add(getNextWord(poem.get(i)));
+        poem.add(seedWord1);
+        poem.add(seedWord2);
+        for (int i=1 ; i <  lines; i ++){
+            StringBuilder word = new StringBuilder();
+            word.append(poem.get(i-1));
+            word.append(" ");
+            word.append(poem.get(i));
+            poem.add(getNextWord(word.toString()));
         }
         if (bool) System.out.println(hashTable.toString(hashTable.size()));
         return createString(poem);
@@ -68,24 +73,46 @@ public class WritePoetry {
         while (sc.hasNextLine()) {
             ArrayList<String> newline = new ArrayList<String>();
             Collections.addAll(newline,sc.nextLine().split(" "));
+            if ( newline.get(0).equals("")) continue;
+            for (int i = 2; i < newline.size(); i++){
 
-            for (int i = 0; i < newline.size(); i++){
-                if (!hashTable.contains(newline.get(i).toLowerCase())) {
-                    hashTable.insert(newline.get(i).toLowerCase() , new WordFreqInfo(newline.get(i).toLowerCase(), 1));
-                }else{
-                    hashTable.find(newline.get(i).toLowerCase()).update(newline.get(i).toLowerCase());
-                }
-                if (i -1 >=0){
-                    hashTable.find(newline.get(i-1).toLowerCase()).update(newline.get(i).toLowerCase());
-                }
+                    StringBuilder word = new StringBuilder();
+                    word.append(newline.get(i-2).toLowerCase());
+                    word.append(" ");
+                    word.append(newline.get(i -1).toLowerCase());
 
-
+                    if (hashTable.contains(word.toString())) {
+                        hashTable.find(word.toString()).update(newline.get(i).toLowerCase());
+                    } else {
+                        hashTable.insert(word.toString(), new WordFreqInfo(word.toString(), 1));
+                        hashTable.find(word.toString()).update(newline.get(i).toLowerCase());
+                    }
 
             }
 
             if (oldLine != null){
-                String oldWord = oldLine.get(oldLine.size()-1).toLowerCase();
-                hashTable.find(oldWord).update(newline.get(0).toLowerCase());
+                StringBuilder word2 = new StringBuilder();
+                word2.append(oldLine.get(oldLine.size()-2).toLowerCase());
+                word2.append(" ");
+                word2.append(oldLine.get(oldLine.size()-1).toLowerCase());
+                if (hashTable.contains(word2.toString())) {
+                    hashTable.find(word2.toString()).update(newline.get(0).toLowerCase());
+                }
+                else {
+                    hashTable.insert(word2.toString(), new WordFreqInfo(word2.toString(), 1));
+                    hashTable.find(word2.toString()).update(newline.get(0).toLowerCase());
+                }
+                StringBuilder word3 = new StringBuilder();
+                word3.append(oldLine.get(oldLine.size()-1).toLowerCase());
+                word3.append(" ");
+                word3.append(newline.get(0).toLowerCase());
+                if (hashTable.contains(word3.toString())) {
+                    hashTable.find(word3.toString()).update(newline.get(1).toLowerCase());
+                }
+                else {
+                    hashTable.insert(word3.toString(), new WordFreqInfo(word3.toString(), 1));
+                    hashTable.find(word3.toString()).update(newline.get(1).toLowerCase());
+                }
             }
             oldLine = newline;
 
