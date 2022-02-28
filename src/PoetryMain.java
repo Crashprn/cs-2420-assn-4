@@ -1,12 +1,21 @@
+import java.io.FileNotFoundException;
 
 public class PoetryMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
         WritePoetry poem = new WritePoetry();
-        System.out.println(poem.WritePoem("green.txt", "sam", 20, true));
-        System.out.println(poem.WritePoem("Lester.txt", "lester", 30, true));
-        System.out.println(poem.WritePoem("HowMany.txt", "how", 30, false));
-        System.out.println(poem.WritePoem("Zebra.txt", "are", 50, true));
+        try {
+            System.out.println(poem.WritePoem("data/green.txt", "sam", 20, true));
+            System.out.println();
+            System.out.println(poem.WritePoem("data/Lester.txt", "lester", 30, true));
+            System.out.println();
+            System.out.println(poem.WritePoem("data/HowMany.txt", "how", 30, false));
+            System.out.println();
+            System.out.println(poem.WritePoem("data/Zebra.txt", "are", 50, true));
+        }
+        catch (FileNotFoundException e){
+            System.out.println("File not found");
+        }
     }
 
 }

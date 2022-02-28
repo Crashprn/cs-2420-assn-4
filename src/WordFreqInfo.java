@@ -21,6 +21,11 @@ public class WordFreqInfo {
 
         return sb.toString();
     }
+    public void update(String word){
+        if (word.equals(this.word)){ this.occurCt +=1;}
+        else {updateFollows(word);}
+
+    }
 
     public void updateFollows(String follow) {
        //System.out.println("updateFollows " + word + " " + follow);
@@ -49,6 +54,14 @@ public class WordFreqInfo {
         public boolean equals(Freq f2) {
             return this.follow.equals(f2.follow);
         }
+    }
+
+    public static void main(String[] args) {
+        WordFreqInfo info = new WordFreqInfo("do", 1);
+        info.update("not");
+        info.update("not");
+        info.update("do");
+        System.out.println(info);
     }
 
 

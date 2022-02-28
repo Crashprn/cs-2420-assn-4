@@ -15,7 +15,7 @@
  * Note that all "matching" is based on the equals method.
  * @author Mark Allen Weiss
  */
-public class HashTable<E>
+public class HashTable<E, T>
 {
     /**
      * Construct the hash table.
@@ -41,14 +41,14 @@ public class HashTable<E>
      * Implementation issue: This routine doesn't allow you to use a lazily deleted location.  Do you see why?
      * @param x the item to insert.
      */
-    public boolean insert( E x )
+    public boolean insert( E x , T t)
     {
         // Insert x as active
         int currentPos = findPos( x );
         if( isActive( currentPos ) )
             return false;
 
-        array[ currentPos ] = new HashEntry<>( x, true );
+        array[ currentPos ] = new HashEntry<>( x,t, true );
         currentActiveEntries++;
 
         // Rehash; see Section 5.5
@@ -80,7 +80,7 @@ public class HashTable<E>
      */
     private void rehash( )
     {
-        HashEntry<E> [ ] oldArray = array;
+        HashEntry<E, T> [ ] oldArray = array;
 
         // Create a new double-sized, empty table
         allocateArray( 2 * oldArray.length );
@@ -88,9 +88,9 @@ public class HashTable<E>
         currentActiveEntries = 0;
 
         // Copy table over
-        for( HashEntry<E> entry : oldArray )
+        for( HashEntry<E, T> entry : oldArray )
             if( entry != null && entry.isActive )
-                insert( entry.element );
+                insert( entry.key, entry.element );
     }
 
     /**
@@ -105,7 +105,7 @@ public class HashTable<E>
         int currentPos = myhash( x );
 
         while( array[ currentPos ] != null &&
-                !array[ currentPos ].element.equals( x ) )
+                !array[ currentPos ].key.equals( x ) )
         {
             currentPos += offset;  // Compute ith probe
             offset += 2;
@@ -168,7 +168,7 @@ public class HashTable<E>
      * @param x the item to search for.
      * @return the matching item.
      */
-    public E find( E x )
+    public T find( E x )
     {
         int currentPos = findPos( x );
         if (!isActive( currentPos )) {
@@ -224,26 +224,28 @@ public class HashTable<E>
         return hashVal;
     }
 
-    private static class HashEntry<E>
+    private static class HashEntry<E, T>
     {
-        public E  element;   // the element
+        public E  key;   // the element
+        public T  element;
         public boolean isActive;  // false if marked deleted
 
-        public HashEntry( E e )
+        public HashEntry( E e, T t )
         {
-            this( e, true );
+            this( e, t, true );
         }
 
-        public HashEntry( E e, boolean i )
+        public HashEntry( E e, T t, boolean i )
         {
-            element  = e;
+            key  = e;
+            element = t;
             isActive = i;
         }
     }
 
     private static final int DEFAULT_TABLE_SIZE = 101;
 
-    private HashEntry<E> [ ] array; // The array of elements
+    private HashEntry<E, T> [ ] array; // The array of elements
     private int occupiedCt;         // The number of occupied cells: active or deleted
     private int currentActiveEntries;                  // Current size
 
@@ -298,7 +300,7 @@ public class HashTable<E>
     // Simple main
     public static void main( String [ ] args )
     {
-        HashTable<String> H = new HashTable<>( );
+        HashTable<String, String> H = new HashTable<>( );
 
 
         long startTime = System.currentTimeMillis( );
@@ -310,11 +312,11 @@ public class HashTable<E>
 
 
         for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
-            H.insert( ""+i );
+            H.insert( ""+i , ""+i );
         // Because GAP and NUMS are mutally prime, this inserts all numbers between 0 and 1999
         System.out.println( "H size is: " + H.size( ) );
         for( int i = GAP; i != 0; i = ( i + GAP ) % NUMS )
-            if( H.insert( ""+i ) )
+            if( H.insert( ""+i, ""+i ) )
                 System.out.println( "ERROR Find fails " + i );
         for( int i = 1; i < NUMS; i+= 2 )
             H.remove( ""+i );
